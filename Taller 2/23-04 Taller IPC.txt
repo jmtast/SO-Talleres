@@ -1,0 +1,27 @@
+Taller IPC
+
+IPC con memoria compartida:
+
+fork(): Se copia el proceso y se ejecuta concurrentemente. No está bueno copiar todo el código, ya que eso no cambia, para eso está el copy on write.
+fork devuelve un int. 0 si es el proceso hijo, otra cosa si es el padre.
+Copy on write: mientras no se escriba un valor, no necesito copiarlo.
+
+con shm_open se pide memoria compartida para la comunicacion entre procesos. Con shmat se mapea la memoria de cada proceso hijo, para poder utilizarla (el proceso padre crea el espacio con shm_open, y cuando el hijo escribe donde mapeó dicho espacio, en realidad escribe en el área compartida).
+
+
+IPC con paso de mensajes:
+
+Bloqueante y no bloqueante es parecido a una llamada telefónica y a un envío de una carta. En el primero, el emisor se bloquea hasta que el receptor lo recibe. En el segundo, el emisor envía el mensaje y sigue haciendo la suya.
+En principio, todas los pasajes de mensajes son bloqueantes a menos que se indique lo contrario.
+
+Para que 2 procesos se puedan comunicar con un pipe, tienen que tener un ancestro en común, y ese ancestro tiene que haber sido el creador del pipe que quieren usar.
+Inicialmente, todos los procesos tienen los 2 extremos (leer y escribir). Es importante que cada uno cierre el extremo que no va a usar.
+
+Si escribo y el pipe no se desbloquea es porque el write no tiene más lugar en el buffer para escribir cosas. (semántica bloqueante del write) IMPORTANTE
+
+
+Sockets:
+
+Que los sockets trabajen en un dominio quiere decir que dentro del mismo, tiene el nombre de un archivo (un dominio es internet, por ejemplo. Otro es UNIX).
+
+El listen no es bloqueante. Hasta que alguien intente conectarse, está escuchando. Una vez que eso pasa, con el connect lo deja establecer la comunicación. En total se involucran 3 file descriptors. El original del servidor, el del cliente, y el que da el connect cuando se efectúa la comunicación.
